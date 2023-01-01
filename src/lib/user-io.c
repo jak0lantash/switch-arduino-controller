@@ -154,7 +154,7 @@ uint8_t delay(uint16_t led_on_time_ms, uint16_t led_off_time_ms,
 void beep(void)
 {
 	PORTD |= PORTD_BUZZER;
-	_delay_ms(1);
+	_delay_ms(20);
 	PORTD &= ~PORTD_BUZZER;
 }
 
