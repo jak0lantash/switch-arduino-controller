@@ -9,7 +9,7 @@
 
 /* Static functions */
 static void temporary_control(void);
-static void repeat_press_a(void);
+static void loop_forward_backward(void);
 static void max_raid_menu(void);
 static void max_raid_setup(void);
 static void light_pillar_setup_with_control(void);
@@ -68,7 +68,7 @@ int main(void)
 			break;
 
 			case 2:
-				repeat_press_a();
+				loop_forward_backward();
 			break;
 
 			case 3:
@@ -115,37 +115,27 @@ void temporary_control(void)
 
 
 /*
- * Press A repetitively until the button is pressed.
- */
-static void repeat_press_a(void)
+ * Move forward, then backward, in a loop
+*/
+static void loop_forward_backward(void)
 {
-	uint8_t count = 0;
-	while (delay(0, 0, 50) == 0) {
-		switch (count % 4) {
-			case 0:
-				set_leds(NO_LEDS);
-			break;
-			case 1:
-				set_leds(TX_LED);
-			break;
-			case 2:
-				set_leds(BOTH_LEDS);
-			break;
-			case 3:
-				set_leds(RX_LED);
-			break;
+	uint16_t cycles = 100;
+	set_leds(BOTH_LEDS);
+	for (;;) {
+		set_leds(RX_LED);
+		for (uint16_t i = 0 ; i < (cycles / 2) ; i += 1) {
+			send_update(BT_NONE,	DP_NEUTRAL, S_TOP, S_NEUTRAL);
 		}
 
-		send_update(BT_A, DP_NEUTRAL, S_NEUTRAL, S_NEUTRAL);
-		send_update(BT_NONE, DP_NEUTRAL, S_NEUTRAL, S_NEUTRAL);
+		set_leds(TX_LED);
+		for (uint16_t i = 0 ; i < (cycles / 2) ; i += 1) {
+			send_update(BT_NONE,	DP_NEUTRAL, S_BOTTOM, S_NEUTRAL);
+		}
 
-		count += 1;
+		/* Reset sticks position */
+		set_leds(NO_LEDS);
+		pause_automation();
 	}
-
-	set_leds(NO_LEDS);
-	send_update(BT_NONE, DP_NEUTRAL, S_NEUTRAL, S_NEUTRAL);
-
-	_delay_ms(200);
 }
 
 
